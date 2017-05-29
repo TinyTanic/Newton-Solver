@@ -1,0 +1,64 @@
+<html>
+
+<head>
+  <title>Newton Solver</title>
+</head>
+
+<body>
+
+  <div>
+    <input type="text" id="f" placeholder="funzione" />
+    <input type="text" id="a" placeholder="estremo sinistro" />
+    <input type="text" id="b" placeholder="estremo sinistro" />
+    <button onClick="solve()">Solve</button>
+    <div>
+      Derivata prima: <span id="f1"></span>
+    </div>
+    <div>
+      Derivata seconda: <span id="f2"></span>
+    </div>
+    <div>
+      Risultato: <span id="result"></span>
+    </div>
+  </div>
+  <script src="math.min.js"></script>
+  <script>
+  const newton = (f, f1, f2, a, b, x0, xp) =>
+  xp - x0 < 0.01
+    ? x0
+    : newton(f, f1, f2, a, b, x0 - solveFunc(f, x0) / solveFunc(f1, x0), x0);
+
+//x^8 + x^2 -1
+//8*x^7 + 2*x
+//56*x^6 +2
+//0
+//3459834753
+
+const solveFunc = (f, x) => {
+  var scope = {
+    x,
+  };
+  var code2 = f.compile();
+  return code2.eval(scope);
+};
+
+const solve = () => {
+  const f = math.parse(document.getElementById('f').value);
+  const a = document.getElementById('a').value;
+  const b = document.getElementById('b').value;
+
+  console.log(f);
+  const f1 = math.derivative(f, 'x');
+  const f2 = math.derivative(f1, 'x');
+
+  let x0 = solveFunc(f, a) * solveFunc(f2, a) > 0 ? a : b;
+  let res = newton(f, f1, f2, a, b, x0);
+  // console.log(res);
+  document.getElementById('f1').innerHTML = f1.toString();
+  document.getElementById('f2').innerHTML = f2.toString();
+  document.getElementById('result').innerHTML = res;
+};
+</script>
+</body>
+
+</html>
